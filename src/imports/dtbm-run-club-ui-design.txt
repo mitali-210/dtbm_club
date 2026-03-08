@@ -1,0 +1,445 @@
+Design a premium cinematic website UI in Figma for a running community called DTBM Run Club.
+
+The design should feel like a Nike running campaign mixed with Apple product design.
+
+The UI must be minimal, dark, athletic, futuristic, and extremely premium with smooth interactions and immersive visuals.
+
+The goal is to create a digital hub for runners where they can explore events, register for races, track stats, and experience the energy of the running community.
+
+VISUAL STYLE
+
+Mood
+Athletic
+Powerful
+Minimal
+Cinematic
+
+Design should feel like a sports performance platform, not a college club website.
+
+COLOR SYSTEM
+
+Primary Background
+Deep charcoal black
+#0A0A0A
+
+Secondary Surface
+#121212
+
+Accent Color
+White
+#FFFFFF
+
+Highlight Accent
+Running energy red
+#FF3B30
+
+Secondary Accent
+Electric blue
+#4CC9F0
+
+Use subtle gradients and glow effects.
+
+TYPOGRAPHY
+
+Heading Font
+Bebas Neue / Anton / Oswald
+
+Body Font
+Inter / SF Pro / Helvetica
+
+Hierarchy
+
+Hero title
+80–96px
+
+Section titles
+36–48px
+
+Card titles
+22–28px
+
+Body text
+16–18px
+
+Stats numbers
+60–80px bold
+
+GRID SYSTEM
+
+12 column layout
+Max width 1440px
+Spacing system 8px grid
+Large section spacing (120–180px)
+
+Rounded corners
+16px
+
+GLOBAL WEBSITE CONCEPT
+
+The entire website should visually feel like a running journey.
+
+Add a glowing animated route line that travels through sections of the website, like a GPS route trail connecting the whole experience.
+
+PAGE STRUCTURE
+1 HERO SECTION
+
+Full screen cinematic hero.
+
+Background visuals
+
+black and white runners
+motion blur trails
+grain texture
+light particle movement
+
+Content
+
+DTBM logo
+
+Headline
+
+RUN TOGETHER
+GO FURTHER
+
+Subtext
+
+A community powered running movement.
+
+Buttons
+
+Join the Club
+Explore Runs
+
+Effects
+
+scroll indicator
+parallax depth
+subtle animated route line
+
+2 COMMUNITY STATS SECTION
+
+Large animated counters.
+
+Display
+
+Total Club KM
+example 128,540 km
+
+Total Runners
+example 842 runners
+
+Total Events
+example 37 events
+
+Design
+
+glass cards
+neon glow borders
+number counter animation
+
+3 GLOBAL RUN MAP
+
+Interactive dark map showing where DTBM runners run.
+
+Features
+
+glowing location points
+animated route trails
+hover city stats
+
+Map colors
+
+black base map
+electric blue run routes
+
+4 UPCOMING EVENTS SECTION
+
+Modern event card grid.
+
+Each card contains
+
+event image
+event title
+date
+distance
+location
+register button
+
+Example
+
+One More Loop Backyard Ultra
+
+Card hover effects
+
+elevation
+shadow glow
+scale animation
+
+5 EVENT PAGE DESIGN
+
+Premium event detail page.
+
+Sections
+
+event hero banner
+race overview
+race rules
+race schedule
+route map
+registration
+
+Include QR based ticket system similar to Luma events.
+
+6 DIGITAL QR EVENT TICKET
+
+Design a premium digital race ticket.
+
+Inspired by
+
+airline boarding pass
+Apple Wallet ticket
+
+Ticket elements
+
+Runner Name
+Event Name
+Bib Number
+Distance
+Date
+Location
+QR Code
+
+Visual style
+
+dark background
+neon red outline
+subtle grid texture
+clean typography
+
+Add scan animation highlight.
+
+7 RUN CALENDAR
+
+Interactive monthly calendar.
+
+Shows
+
+weekly runs
+long runs
+race days
+
+Design
+
+dark grid calendar
+colored event tags
+
+Interactions
+
+hover event preview
+expand event details
+
+8 ROUTE LIBRARY
+
+Collection of running routes.
+
+Route card includes
+
+route preview map
+distance
+elevation
+difficulty level
+
+Difficulty tags
+
+Beginner
+Intermediate
+Advanced
+
+Card hover animation.
+
+9 RUNNER LEADERBOARD
+
+Community leaderboard.
+
+Columns
+
+Rank
+Runner Name
+Total KM
+Events
+Streak
+
+Design
+
+glass leaderboard panel
+bold numeric emphasis
+
+10 DIGITAL MEDAL WALL
+
+Gamified runner achievements.
+
+Each event unlocks a 3D digital medal badge.
+
+Runner profile shows
+
+medals earned
+events completed
+streak achievements
+
+Hover medal reveals event details.
+
+11 WEEKLY CLUB MILEAGE GRAPH
+
+Animated graph showing weekly total running distance.
+
+Example
+
+Mon 420 km
+Tue 510 km
+Wed 680 km
+Thu 450 km
+Fri 300 km
+Sat 920 km
+Sun 1400 km
+
+Design
+
+glowing line graph
+dark grid background
+
+12 COMMUNITY GALLERY
+
+Masonry photo grid.
+
+Photos include
+
+trail runs
+city runs
+finish line celebrations
+group photos
+
+Hover effects
+
+zoom image
+light glow overlay
+
+13 DAILY RUN CHALLENGE
+
+Dynamic widget.
+
+Example challenges
+
+Run 5km today
+Sunset 8km run
+Hill repeats session
+
+Completion unlocks digital badge.
+
+14 JOIN DTBM SECTION
+
+Minimal signup form.
+
+Fields
+
+Name
+Phone
+City
+Running Level
+
+CTA button
+
+Join the Club
+
+Button animation
+
+pulse glow
+
+15 FOOTER
+
+Sections
+
+About DTBM
+Events
+Routes
+Calendar
+Community
+Contact
+
+Include
+
+Instagram feed preview
+Strava club embed
+
+MICRO INTERACTIONS
+
+Include modern UI effects
+
+smooth scrolling
+parallax layers
+button ripple animation
+hover glow
+card elevation
+animated counters
+route line motion
+wind particle effects
+
+FIGMA COMPONENT SYSTEM
+
+Create reusable components
+
+Navbar
+Event Card
+Route Card
+Leaderboard Row
+Stat Counter
+Calendar Event Tag
+QR Ticket
+Runner Profile Card
+Medal Badge
+Gallery Tile
+Footer
+
+Include component states
+
+default
+hover
+active
+
+NAVIGATION
+
+Sticky top navigation
+
+Logo
+Events
+Routes
+Calendar
+Community
+Join
+
+CTA
+
+Join Run
+
+RESPONSIVE DESIGN
+
+Create layouts for
+
+Desktop 1440px
+Tablet 1024px
+Mobile 768px
+
+Mobile UI
+
+stacked event cards
+scrollable route cards
+bottom navigation
+
+FINAL EXPERIENCE GOAL
+
+The website must feel like
+
+a running journey
+a premium athletic brand
+a powerful community platform
+
+It should visually feel like movement, endurance, and energy, not a static website.

@@ -1,0 +1,355 @@
+Design a premium monochrome runner profile dashboard UI in Figma for a running community platform called DTBM Run Club.
+
+The design must be 100% black and white only.
+
+No colors.
+No gradients with color tones.
+Only black, white, and subtle greys.
+
+The interface should feel like a mix of Nike Run Club minimal dashboards and Apple product pages.
+
+The visual style must be minimal, athletic, bold, and extremely clean.
+
+COLOR SYSTEM (STRICT MONOCHROME)
+
+Background
+Pure black
+#000000
+
+Secondary background
+Charcoal
+#0A0A0A
+
+Surface cards
+#111111
+
+Borders
+#2A2A2A
+
+Primary text
+White
+#FFFFFF
+
+Secondary text
+Grey
+#B3B3B3
+
+Highlight elements
+White glow or outline only
+
+No other colors allowed.
+
+TYPOGRAPHY
+
+Heading font
+Bebas Neue / Anton / Oswald
+
+Body font
+Inter / SF Pro
+
+Hierarchy
+
+Runner name
+48–60px
+
+Section titles
+28–36px
+
+Card titles
+20–24px
+
+Body text
+16px
+
+Stat numbers
+40–60px bold
+
+Typography should feel strong, athletic, and minimal.
+
+GRID SYSTEM
+
+12 column grid
+Max width 1440px
+Spacing system 8px
+Large vertical spacing
+Rounded corners 16px
+
+Use clean whitespace and sharp layouts.
+
+PROFILE PAGE STRUCTURE
+1 PROFILE HERO SECTION
+
+Top runner identity card.
+
+Elements
+
+Profile photo (circular)
+
+Runner name
+City
+Member since date
+Running level
+
+Example
+
+Pruthvi Jadhav
+Pune, India
+Member since 2026
+Advanced Runner
+
+Design
+
+dark card
+thin white outline
+minimal typography
+
+2 PERSONAL RUNNING STATS
+
+Large stat cards.
+
+Stats
+
+Total KM Run
+Events Completed
+Fastest 5K
+Fastest 10K
+Longest Run
+
+Example
+
+Total KM
+1240 km
+
+Events
+8
+
+Fastest 5K
+21:34
+
+Fastest 10K
+46:10
+
+Longest Run
+32 km
+
+Design
+
+white numeric typography
+minimal glass style cards
+soft shadow elevation
+
+3 RUNNING STREAK TRACKER
+
+Performance widget.
+
+Display
+
+Current run streak
+Longest streak
+Weekly KM
+
+Use white circular progress rings on black background.
+
+Example
+
+Current streak
+12 days
+
+Longest streak
+37 days
+
+Weekly KM
+48 km
+
+4 EVENT HISTORY
+
+Race participation cards.
+
+Each card contains
+
+Event name
+Distance
+Date
+Finish result
+
+Example
+
+One More Loop Backyard Ultra
+Distance 56 km
+Loops 14
+Date Dec 2025
+
+Design
+
+minimal event cards
+black background
+white borders
+
+5 DIGITAL MEDAL WALL
+
+Achievement section.
+
+Grid of medals.
+
+Medal style
+
+monochrome metallic medals
+black metal
+silver metal
+white glow highlights
+
+Hover reveals
+
+event name
+distance
+date
+
+6 ROUTES COMPLETED
+
+Route cards.
+
+Each card includes
+
+Route preview map
+Distance
+Elevation
+Difficulty
+
+Example
+
+City Loop
+12 km
+
+River Trail
+8 km
+
+Hill Route
+15 km
+
+Design
+
+monochrome map style
+thin white route lines
+
+7 CLUB LEADERBOARD RANK
+
+Display runner rank.
+
+Stats
+
+Club Rank
+Total KM Rank
+Events Rank
+
+Example
+
+Club Rank #12
+KM Rank #8
+Events Rank #5
+
+Design
+
+large white numbers
+dark card surfaces
+
+8 UPCOMING EVENTS
+
+Events the runner registered for.
+
+Event card includes
+
+Event poster
+Event name
+Distance
+Date
+
+Example
+
+City Night Run
+10 km
+14 June
+
+Design
+
+black and white event cards
+minimal layout
+
+9 DIGITAL QR RACE TICKETS
+
+Race tickets stored in profile.
+
+Ticket style inspired by
+
+airline boarding passes.
+
+Ticket elements
+
+Runner name
+Event name
+Bib number
+Distance
+Date
+QR code
+
+Design
+
+black ticket background
+white typography
+thin white borders
+
+10 RUNNER ACTIVITY FEED
+
+Timeline of achievements.
+
+Examples
+
+Pruthvi completed 18 km trail run
+Pruthvi unlocked Hill Beast medal
+Pruthvi registered for City Night Run
+
+Design
+
+minimal activity timeline
+white icons
+dark cards
+
+MICRO INTERACTIONS
+
+Use subtle monochrome animations
+
+card elevation
+white glow hover
+stat number counting animation
+progress ring animation
+medal shine effect
+
+All animations must remain monochrome.
+
+FIGMA COMPONENT SYSTEM
+
+Create reusable components
+
+Profile Header
+Stat Card
+Event Card
+Route Card
+Medal Badge
+Leaderboard Rank Card
+QR Ticket
+Activity Feed Item
+
+Include states
+
+default
+hover
+active
+
+FINAL DESIGN GOAL
+
+The profile page should feel like
+
+a professional athlete dashboard
+a performance tracking system
+a premium running platform
+
+The interface must communicate discipline, endurance, and achievement through minimal black and white design.
