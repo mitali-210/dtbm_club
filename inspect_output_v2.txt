@@ -1,0 +1,31 @@
+﻿--- INSPECTING AYUSH DATA ---
+Found 1 users with "ayush" in name:
+[
+  {
+    "id": "735af854-4e94-4ef8-8a07-9df7156546be",
+    "name": "Ayush Brahmankar",
+    "email": "ayushbr1765@gmail.com",
+    "mobile_number": null,
+    "joined_at": "2026-03-25T12:46:40.113498+00:00",
+    "total_miles": 15,
+    "total_runs": 2,
+    "medals": [],
+    "registered_events": []
+  }
+]
+
+Checking activities for Ayush Brahmankar (735af854-4e94-4ef8-8a07-9df7156546be)...
+Found 2 activities.
+Latest activity: {
+  "id": "7930c57e-e896-4736-96c6-5b13d8dff0a0",
+  "user_id": "735af854-4e94-4ef8-8a07-9df7156546be",
+  "name": "Urban Set 10k",
+  "date": "2026-03-30T00:00:00+00:00",
+  "distance": 10,
+  "duration": "30",
+  "pace": "8 : 30",
+  "source": "manual",
+  "external_id": null,
+  "created_at": "2026-04-03T15:29:48.103268+00:00"
+}
+Current Profile Stats: Miles=15, Runs=2

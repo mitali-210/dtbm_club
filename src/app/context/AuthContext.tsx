@@ -18,6 +18,15 @@ interface UserProfile {
   totalRuns: number;
   medals: string[];
   registeredEvents: string[];
+  activities: any[];
+  currentStreak: number;
+  longestStreak: number;
+  weeklyMiles: number;
+  fastest5k: string | null;
+  longestRun: number;
+  clubRank?: string | number;
+  milesRank?: string | number;
+  eventsRank?: string | number;
 }
 
 interface AuthContextType {

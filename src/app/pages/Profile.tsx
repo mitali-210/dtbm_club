@@ -138,24 +138,12 @@ export function Profile() {
       isActive = false;
     };
   }, [user?.id, registeredEventIds.join(',')]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-white text-xl font-['Bebas_Neue'] tracking-wider">Loading...</div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return null;
-  }
-
+  
   // Create a default profile if none exists
   const userProfile = profile || {
-    id: user.id,
-    name: user.name || 'Runner',
-    email: user.email,
+    id: user?.id || '',
+    name: user?.name || 'Runner',
+    email: user?.email || '',
     joinedAt: new Date().toISOString(),
     totalMiles: 0,
     totalRuns: 0,
@@ -175,6 +163,19 @@ export function Profile() {
     [userProfile.activities]
   );
   const medalUnlocks = getMedalUnlocks(activities);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white text-xl font-['Bebas_Neue'] tracking-wider">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
   const medals = [
     {
       id: 'first-5k',
@@ -401,16 +402,16 @@ export function Profile() {
           ) : tickets.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {tickets.map((ticket) => (
-                <div key={ticket.ticketId} className="bg-[#111111] border border-[#2A2A2A] rounded-xl p-6 hover:border-white/20 transition-all group">
+                <div key={ticket.id} className="bg-[#111111] border border-[#2A2A2A] rounded-xl p-6 hover:border-white/20 transition-all group">
                   <div className="w-12 h-12 rounded-lg bg-white mb-4 flex items-center justify-center">
                     <Flag size={24} className="text-black" />
                   </div>
                   <h3 className="font-['Bebas_Neue'] text-2xl text-white mb-2 tracking-wide">
                     {ticket?.event?.name || 'Event Ticket'}
                   </h3>
-                  <p className="text-[#B3B3B3] text-sm mb-1">Bib: {ticket.bibNumber || '--'}</p>
+                  <p className="text-[#B3B3B3] text-sm mb-1">Bib: {ticket.bib_number || '--'}</p>
                   <p className="text-[#B3B3B3] text-sm mb-1">{ticket?.event?.distance || 'Distance TBD'}</p>
-                  <p className="text-[#B3B3B3] text-xs mb-4">{ticket?.checkedInAt ? `Present at ${new Date(ticket.checkedInAt).toLocaleString()}` : 'Not marked present yet'}</p>
+                  <p className="text-[#B3B3B3] text-xs mb-4">{ticket?.check_in_time ? `Present at ${new Date(ticket.check_in_time).toLocaleString()}` : 'Not marked present yet'}</p>
                   <div className="space-y-2">
                     <button
                       onClick={() => {
@@ -422,8 +423,8 @@ export function Profile() {
                       View Ticket
                     </button>
                     <button
-                      onClick={() => downloadCertificate(ticket.eventId)}
-                      disabled={!ticket?.checkedInAt}
+                      onClick={() => downloadCertificate(ticket.event_id)}
+                      disabled={!ticket?.check_in_time}
                       className="w-full py-2 border border-white/30 text-white rounded-lg font-medium hover:bg-white/10 transition-colors disabled:opacity-40"
                     >
                       Download Certificate
@@ -467,14 +468,14 @@ export function Profile() {
 
         {selectedTicket && (
           <QRTicket
-            eventId={String(selectedTicket?.eventId || selectedEvent?.id || '')}
-            userId={String(selectedTicket?.userId || user?.id || '')}
-            ticketId={String(selectedTicket?.ticketId || `${selectedTicket?.eventId || selectedEvent?.id || ''}-${selectedTicket?.userId || user?.id || ''}`)}
-            qrSignature={String(selectedTicket?.qrSignature || '')}
+            eventId={String(selectedTicket?.event_id || selectedEvent?.id || '')}
+            userId={String(selectedTicket?.user_id || user?.id || '')}
+            ticketId={String(selectedTicket?.id || '')}
+            qrSignature={String(selectedTicket?.qr_data || '')}
             eventName={selectedEvent?.name || 'Event'}
             runnerName={selectedTicket?.userName || userProfile.name || user?.name || user?.email || 'Runner'}
-            bibNumber={String(selectedTicket?.bibNumber || '1')}
-            distance={selectedTicket?.selectedDistance || selectedEvent?.distance || 'TBD'}
+            bibNumber={String(selectedTicket?.bib_number || '1')}
+            distance={selectedTicket?.selected_distance || selectedEvent?.distance || 'TBD'}
             date={selectedEvent?.date || 'TBD'}
             location={selectedEvent?.location || 'TBD'}
             onClose={() => {
@@ -524,7 +525,7 @@ function StreakItem({ label, value, suffix, icon }: { label: string; value: numb
 }
 
 // Rank Item Component
-function RankItem({ label, value }: { label: string; value: string }) {
+function RankItem({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="flex items-center justify-between">
       <span className="text-[#B3B3B3]">{label}</span>

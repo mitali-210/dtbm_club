@@ -288,17 +288,25 @@ export function Admin() {
       const { data: { session } } = await supabase.auth.getSession();
       const token = session?.access_token;
 
+      // Ensure date is a valid ISO string
+      const payload = {
+        ...activityData,
+        date: activityData.date ? new Date(activityData.date).toISOString() : new Date().toISOString()
+      };
+
       const response = await fetch(`${API_URL}/admin/users/${selectedUser}/activity`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(activityData),
+        body: JSON.stringify(payload),
       });
 
+      const result = await response.json().catch(() => ({}));
+
       if (!response.ok) {
-        throw new Error('Failed to add activity');
+        throw new Error(result.error || 'Failed to add activity');
       }
 
       toast.success('Activity added successfully!');
@@ -356,8 +364,18 @@ export function Admin() {
   };
 
   const handleScanTicket = async (rawQrData?: string) => {
-    const qrData = (rawQrData ?? scanInput).trim();
+    let qrData = (rawQrData ?? scanInput).trim();
     if (!qrData || scanBusy) return;
+
+    // Handle JSON QR data from QRTicket component
+    try {
+      const parsed = JSON.parse(qrData);
+      if (parsed.qrSignature) {
+        qrData = parsed.qrSignature;
+      }
+    } catch (e) {
+      // Not JSON, use as is (normal string scanner or manual input)
+    }
 
     setScanBusy(true);
     try {
