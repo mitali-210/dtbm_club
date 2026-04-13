@@ -28,7 +28,7 @@ export function OriginStory() {
           transition={{ delay: 0.15 }}
           className="text-white/70 text-sm md:text-lg leading-relaxed max-w-4xl"
         >
-          DTBM (Dare To Be More) started with founders Pruthvi and the early core crew in Nashik who wanted one thing: a
+          DTBM (Dare To Be More) started with founders Soham and Shreeram in Nashik who wanted one thing: a
           consistent space where beginners and experienced runners could train together without judgment. What began as a
           small weekend meetup turned into a growing running culture powered by discipline, accountability, and community.
           Every event, every check-in, and every finish line is built on that same mission — help each runner become more

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { useAuth } from '../context/AuthContext';
 import { User, TrendingUp, Trophy, Award, MapPin, Zap, Target, Flag, ExternalLink, Lock } from 'lucide-react';
@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router';
 import { fetchEventCertificate, fetchEventTicket, fetchEvents } from '../lib/api';
 import { QRTicket } from '../components/QRTicket';
 import { toast } from 'sonner';
+import { toPng } from 'html-to-image';
 
 const GOOGLE_FORM_URL = 'https://forms.gle/irdm9MH6L6Hy2Fpy5';
 const MILES_PER_KILOMETER = 0.621371;
@@ -46,6 +47,8 @@ export function Profile() {
   const [tickets, setTickets] = useState<any[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<any | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
+  const [certificateData, setCertificateData] = useState<any | null>(null);
+  const certificateRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -65,27 +68,26 @@ export function Profile() {
     try {
       const result = await fetchEventCertificate(eventId);
       const certificate = result?.certificate;
-      const content = [
-        'DTBM RUN CLUB - FINISHER CERTIFICATE',
-        `Certificate ID: ${certificate?.certificateId || ''}`,
-        `Runner: ${certificate?.runnerName || ''}`,
-        `Event: ${certificate?.eventName || ''}`,
-        `Distance: ${certificate?.distance || ''}`,
-        `Level: ${certificate?.level || ''}`,
-        `Checked In: ${certificate?.checkedInAt || ''}`,
-        `Issued At: ${certificate?.issuedAt || ''}`,
-      ].join('\n');
-
-      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
+      setCertificateData(certificate);
+      // Wait longer for the hidden certificate DOM to fully render
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      if (!certificateRef.current) throw new Error('Certificate render failed');
+      const dataUrl = await toPng(certificateRef.current, {
+        cacheBust: true,
+        pixelRatio: 2,
+        backgroundColor: '#000000',
+        width: certificateRef.current.offsetWidth,
+        height: certificateRef.current.offsetHeight,
+      });
       const link = document.createElement('a');
-      link.href = url;
-      link.download = `${certificate?.certificateId || 'dtbm-certificate'}.txt`;
+      link.download = `${certificate?.certificateId || 'dtbm-certificate'}.png`;
+      link.href = dataUrl;
       link.click();
-      URL.revokeObjectURL(url);
       toast.success('Certificate downloaded');
     } catch (error: any) {
       toast.error(error?.message || 'Certificate not available yet');
+    } finally {
+      setCertificateData(null);
     }
   };
 
@@ -442,30 +444,6 @@ export function Profile() {
           )}
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.58 }}
-          className="bg-[#0A0A0A] border border-[#2A2A2A] rounded-2xl p-8"
-        >
-          <h2 className="font-['Bebas_Neue'] text-3xl text-white mb-6 tracking-wide">Attended Events Timeline</h2>
-          {attendedActivities.length > 0 ? (
-            <div className="space-y-3">
-              {attendedActivities.map((activity: any) => (
-                <div key={activity.id} className="bg-[#111111] border border-[#2A2A2A] rounded-xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                  <div>
-                    <p className="text-white font-medium">{activity.name}</p>
-                    <p className="text-[#B3B3B3] text-xs">{new Date(activity.date).toLocaleString()} • {activity.level ? String(activity.level).toUpperCase() : 'LEVEL N/A'}</p>
-                  </div>
-                  <p className="font-['Bebas_Neue'] text-2xl text-white">{activity.distance} mi</p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-[#B3B3B3]">No attended events yet.</p>
-          )}
-        </motion.div>
-
         {selectedTicket && (
           <QRTicket
             eventId={String(selectedTicket?.event_id || selectedEvent?.id || '')}
@@ -483,6 +461,81 @@ export function Profile() {
               setSelectedEvent(null);
             }}
           />
+        )}
+
+        {/* Hidden certificate canvas for PNG generation */}
+        {certificateData && (
+          <div style={{ position: 'fixed', left: '-9999px', top: 0, zIndex: -1 }}>
+          <div
+            ref={certificateRef}
+            style={{
+              width: '900px',
+              background: 'linear-gradient(135deg, #0A0A0A 0%, #111111 100%)',
+              border: '2px solid #FF3B30',
+              borderRadius: '24px',
+              padding: '64px',
+              fontFamily: 'sans-serif',
+              color: '#ffffff',
+            }}
+          >
+            {/* Header */}
+            <div style={{ textAlign: 'center', marginBottom: '40px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '32px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '16px' }}>
+                <div style={{ width: '48px', height: '48px', background: 'linear-gradient(135deg, #FF3B30, #4CC9F0)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ color: '#000', fontWeight: 900, fontSize: '14px', letterSpacing: '1px' }}>DTBM</span>
+                </div>
+                <span style={{ fontSize: '28px', fontWeight: 900, letterSpacing: '4px', textTransform: 'uppercase' }}>Run Club</span>
+              </div>
+              <div style={{ display: 'inline-block', background: '#FF3B30', borderRadius: '999px', padding: '6px 20px', fontSize: '12px', letterSpacing: '3px', textTransform: 'uppercase' }}>
+                Finisher Certificate
+              </div>
+            </div>
+
+            {/* Runner name */}
+            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', letterSpacing: '3px', textTransform: 'uppercase', marginBottom: '8px' }}>This certifies that</p>
+              <h1 style={{ fontSize: '56px', fontWeight: 900, letterSpacing: '4px', textTransform: 'uppercase', margin: 0, color: '#ffffff' }}>
+                {certificateData?.runnerName || ''}
+              </h1>
+            </div>
+
+            {/* Event details */}
+            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', letterSpacing: '3px', textTransform: 'uppercase', marginBottom: '8px' }}>has successfully completed</p>
+              <h2 style={{ fontSize: '32px', fontWeight: 700, margin: '0 0 8px', color: '#ffffff' }}>{certificateData?.eventName || ''}</h2>
+              <p style={{ fontSize: '20px', color: '#FF3B30', fontWeight: 700, margin: 0 }}>{certificateData?.distance || ''}</p>
+            </div>
+
+            {/* Stats row */}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '48px', marginBottom: '40px', padding: '24px', background: 'rgba(255,255,255,0.04)', borderRadius: '16px' }}>
+              {certificateData?.level && (
+                <div style={{ textAlign: 'center' }}>
+                  <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '4px' }}>Level</p>
+                  <p style={{ fontSize: '20px', fontWeight: 700, margin: 0 }}>{certificateData.level}</p>
+                </div>
+              )}
+              {certificateData?.checkedInAt && (
+                <div style={{ textAlign: 'center' }}>
+                  <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '4px' }}>Completed</p>
+                  <p style={{ fontSize: '16px', fontWeight: 600, margin: 0 }}>{new Date(certificateData.checkedInAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                </div>
+              )}
+              {certificateData?.certificateId && (
+                <div style={{ textAlign: 'center' }}>
+                  <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '4px' }}>Certificate ID</p>
+                  <p style={{ fontSize: '13px', fontWeight: 500, margin: 0, color: 'rgba(255,255,255,0.6)' }}>{certificateData.certificateId}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '24px' }}>
+              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', margin: 0 }}>
+                {certificateData?.issuedAt ? `Issued ${new Date(certificateData.issuedAt).toLocaleDateString()}` : ''} · dtbmrunclub.com
+              </p>
+            </div>
+          </div>
+          </div>
         )}
       </div>
     </div>

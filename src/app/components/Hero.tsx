@@ -182,7 +182,7 @@ export function Hero() {
               />
 
               <motion.h1 
-                className="font-['Bebas_Neue'] text-[18vw] md:text-[15vw] leading-[0.85] mb-4 font-[Times_New_Roman] text-[#ffffff]"
+                className="font-['Montserrat'] font-black text-[18vw] md:text-[15vw] leading-[0.85] mb-4 text-[#ffffff]"
                 animate={{
                   letterSpacing: isHovered ? '0.12em' : '0em',
                   scale: isHovered ? 1.035 : 1,
@@ -192,33 +192,19 @@ export function Hero() {
                   ease: smoothEase,
                 }}
               >
-                DTBM&gt;
+                DTB<span className="relative">M<span className="absolute bottom-0 left-0 w-full h-[4px] md:h-[6px] bg-white" /></span>&gt;
               </motion.h1>
 
               <motion.h1
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-0 font-['Bebas_Neue'] text-[18vw] md:text-[15vw] leading-[0.85] mb-4 font-[Times_New_Roman] text-white/30 blur-[2px]"
+                className="pointer-events-none absolute inset-0 font-['Montserrat'] font-black text-[18vw] md:text-[15vw] leading-[0.85] mb-4 text-white/30 blur-[2px]"
                 animate={{ opacity: [0.15, 0.32, 0.15] }}
                 transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
               >
                 DTBM&gt;
               </motion.h1>
               
-              {/* Underline under "M>" */}
-              <motion.div
-                className="absolute bottom-0 h-[4px] md:h-[6px] bg-white"
-                style={{
-                  width: 'clamp(45px, 18%, 100px)',
-                  right: 'clamp(55px, 22%, 120px)',
-                }}
-                animate={{
-                  scaleX: isHovered ? 1.08 : 1,
-                }}
-                transition={{
-                  duration: 0.75,
-                  ease: smoothEase,
-                }}
-              />
+              {/* Underline removed - now inline under M only */}
             </div>
 
             {/* "Dare To Be More" Tagline */}

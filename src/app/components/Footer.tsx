@@ -48,8 +48,8 @@ export function Footer() {
               Contact
             </p>
             <ul className="space-y-4">
-              <FooterInline Icon={Mail} label="dtbmclub@gmail.com" href="mailto:dtbmclub@gmail.com" />
-              <FooterInline Icon={Phone} label="+91 00000 00000" href="tel:+9100000000000" />
+              <FooterInline Icon={Mail} label="dtbmrunclub@gmail.com" href="mailto:dtbmrunclub@gmail.com" />
+              <FooterInline Icon={Phone} label="+91 74209 15388" href="tel:+917420915388" />
               <FooterInline Icon={MessageCircle} label="Join WhatsApp" href={WHATSAPP_COMMUNITY_URL} />
             </ul>
           </div>
@@ -62,7 +62,7 @@ export function Footer() {
             <div className="flex gap-4">
               <SocialIcon Icon={Instagram} href="https://www.instagram.com/dtbmclub/" />
               <SocialIcon Icon={MessageCircle} href={WHATSAPP_COMMUNITY_URL} />
-              <SocialIcon Icon={Mail} href="mailto:dtbmclub@gmail.com" />
+              <SocialIcon Icon={Mail} href="mailto:dtbmrunclub@gmail.com" />
             </div>
           </div>
         </div>

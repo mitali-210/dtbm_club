@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type TouchEvent } from "react";
 import Masonry from "react-responsive-masonry";
 import { ChevronLeft, ChevronRight, Download, X } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { fetchGalleryPhotos } from "../lib/api";
 
 import img1 from "../pages/IMG-20250726-WA0010.jpg.jpeg";
 import img2 from "../pages/IMG-20250803-WA0014.jpg.jpeg";
@@ -13,21 +14,32 @@ import img6 from "../pages/IMG-20251129-WA0002.jpg.jpeg";
 import img7 from "../pages/IMG-20251207-WA0002(2).jpg.jpeg";
 import img8 from "../pages/IMG-20260124-WA0004.jpg.jpeg";
 
-const photos = [
-  { id: 1, url: img1, alt: "Community run moment 1" },
-  { id: 2, url: img2, alt: "Community run moment 2" },
-  { id: 3, url: img3, alt: "Community run moment 3" },
-  { id: 4, url: img4, alt: "Community run moment 4" },
-  { id: 5, url: img5, alt: "Community run moment 5" },
-  { id: 6, url: img6, alt: "Community run moment 6" },
-  { id: 7, url: img7, alt: "Community run moment 7" },
-  { id: 8, url: img8, alt: "Community run moment 8" },
+const fallbackPhotos = [
+  { id: "1", url: img1, alt: "Community run moment 1" },
+  { id: "2", url: img2, alt: "Community run moment 2" },
+  { id: "3", url: img3, alt: "Community run moment 3" },
+  { id: "4", url: img4, alt: "Community run moment 4" },
+  { id: "5", url: img5, alt: "Community run moment 5" },
+  { id: "6", url: img6, alt: "Community run moment 6" },
+  { id: "7", url: img7, alt: "Community run moment 7" },
+  { id: "8", url: img8, alt: "Community run moment 8" },
 ];
 
 export function Gallery() {
+  const [photos, setPhotos] = useState(fallbackPhotos);
   const [activePhotoIndex, setActivePhotoIndex] = useState<number | null>(null);
   const activePhoto = activePhotoIndex !== null ? photos[activePhotoIndex] : null;
   const touchStartXRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    fetchGalleryPhotos()
+      .then(data => {
+        if (data.length > 0) {
+          setPhotos(data.map((p, i) => ({ id: p.name, url: p.url, alt: `Community run moment ${i + 1}` })));
+        }
+      })
+      .catch(() => { /* keep fallback */ });
+  }, []);
 
   const goToPreviousPhoto = () => {
     setActivePhotoIndex((current) => {

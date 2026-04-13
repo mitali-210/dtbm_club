@@ -19,13 +19,37 @@ export function SignUp() {
     e.preventDefault();
     setError('');
 
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('Please enter a valid email address');
       return;
     }
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+    const cleanPhone = mobileNumber.replace(/[\s\-+()]/g, '');
+    // strip country code only if it results in a 10-digit number
+    const normalized = cleanPhone.length === 12 && cleanPhone.startsWith('91')
+      ? cleanPhone.slice(2)
+      : cleanPhone.length === 13 && cleanPhone.startsWith('091')
+      ? cleanPhone.slice(3)
+      : cleanPhone;
+    const phoneRegex = /^[6-9]\d{9}$/;
+    if (!phoneRegex.test(normalized)) {
+      setError('Please enter a valid 10-digit Indian mobile number');
+      return;
+    }
+
+    if (password.length < 8 || password.length > 10) {
+      setError('Password must be between 8 and 10 characters');
+      return;
+    }
+
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+      setError('Password must contain at least one special character');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
       return;
     }
 

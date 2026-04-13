@@ -20,6 +20,13 @@ export function Login() {
     e.preventDefault();
     setError('');
     setResetSent(false);
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(resetEmail)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
     try {
       await forgotPassword(resetEmail);
       setResetSent(true);
@@ -31,6 +38,13 @@ export function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
     setLoading(true);
 
     try {

@@ -2,14 +2,14 @@ import { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router';
-import { Upload, Users, Calendar, Trash2, Edit, Plus, X, Save, ScanLine, Play } from 'lucide-react';
+import { Upload, Users, Calendar, Trash2, Edit, Plus, X, Save, ScanLine, Play, Image } from 'lucide-react';
 import { toast } from 'sonner';
 import { API_URL, supabase } from '../lib/supabase';
 import { Scanner } from '@yudiel/react-qr-scanner';
-import { exportAdminEventCsv, fetchAdminEventCheckins, fetchReminderPreview, sendEventReminders } from '../lib/api';
+import { exportAdminEventCsv, fetchAdminEventCheckins, fetchReminderPreview, sendEventReminders, fetchGalleryPhotos, uploadGalleryPhoto, deleteGalleryPhoto } from '../lib/api';
 import { ADMIN_EMAILS } from '../lib/config';
 
-type TabType = 'events' | 'users' | 'activities' | 'scanner';
+type TabType = 'events' | 'users' | 'activities' | 'scanner' | 'gallery';
 
 function parseFlexibleDateTime(value: unknown): number {
   if (typeof value === 'number') {
@@ -73,7 +73,17 @@ export function Admin() {
   });
   const [updating, setUpdating] = useState(false);
   const [showEventForm, setShowEventForm] = useState(false);
-  const [editingEvent, setEditingEvent] = useState<any>(null);
+  const [scanInput, setScanInput] = useState('');
+  const [scanBusy, setScanBusy] = useState(false);
+  const [scanResult, setScanResult] = useState<any>(null);
+  const [raceStartBusy, setRaceStartBusy] = useState(false);
+  const [dashboardLoading, setDashboardLoading] = useState(false);
+  const [dashboardEventId, setDashboardEventId] = useState('');
+  const [dashboardSearch, setDashboardSearch] = useState('');
+  const [dashboardData, setDashboardData] = useState<any | null>(null);
+  const [reminderPreview, setReminderPreview] = useState<any | null>(null);
+  const [reminderSendResult, setReminderSendResult] = useState<any | null>(null);
+  const lastScannedValueRef = useRef('');const [editingEvent, setEditingEvent] = useState<any>(null);
   const [eventForm, setEventForm] = useState({
     name: '',
     date: '',
@@ -86,17 +96,7 @@ export function Admin() {
     maxParticipants: '',
     registrationCutoffMinutes: '0'
   });
-  const [scanInput, setScanInput] = useState('');
-  const [scanBusy, setScanBusy] = useState(false);
-  const [scanResult, setScanResult] = useState<any>(null);
-  const [raceStartBusy, setRaceStartBusy] = useState(false);
-  const [dashboardLoading, setDashboardLoading] = useState(false);
-  const [dashboardEventId, setDashboardEventId] = useState('');
-  const [dashboardSearch, setDashboardSearch] = useState('');
-  const [dashboardData, setDashboardData] = useState<any | null>(null);
-  const [reminderPreview, setReminderPreview] = useState<any | null>(null);
-  const [reminderSendResult, setReminderSendResult] = useState<any | null>(null);
-  const lastScannedValueRef = useRef('');
+  
 
   useEffect(() => {
     if (!loading && (!user || !user.email || !ADMIN_EMAILS.has(user.email.toLowerCase()))) {
@@ -567,6 +567,9 @@ export function Admin() {
           <TabButton active={activeTab === 'scanner'} onClick={() => setActiveTab('scanner')}>
             Scan Tickets
           </TabButton>
+          <TabButton active={activeTab === 'gallery'} onClick={() => setActiveTab('gallery')}>
+            Gallery
+          </TabButton>
         </div>
 
         {/* Tab Content */}
@@ -628,6 +631,8 @@ export function Admin() {
             reminderSendResult={reminderSendResult}
           />
         )}
+
+        {activeTab === 'gallery' && <GalleryTab />}
       </div>
     </div>
   );
@@ -1147,7 +1152,15 @@ function TicketScannerTab({
   reminderSendResult: any;
 }) {
   const [timerNow, setTimerNow] = useState<number>(Date.now());
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  const [cameraReady, setCameraReady] = useState(false);
   const raceStartedAt = dashboardData?.event?.raceStartedAt || null;
+
+  // Fallback: if camera doesn't signal ready in 3s, assume it's running
+  useEffect(() => {
+    const timer = setTimeout(() => setCameraReady(true), 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (!raceStartedAt) return;
@@ -1271,27 +1284,50 @@ function TicketScannerTab({
           only admin scan can mark runner present
         </p>
 
-        <div className="overflow-hidden border border-white/10 bg-black mb-6">
-          <Scanner
-            constraints={{ facingMode: 'environment' }}
-            onScan={(detectedCodes) => {
-              const rawValue = detectedCodes?.[0]?.rawValue?.trim();
-              if (!rawValue || scanBusy || lastScannedValueRef.current === rawValue) {
-                return;
-              }
-              lastScannedValueRef.current = rawValue;
-              onScanTicket(rawValue).finally(() => {
-                window.setTimeout(() => {
-                  if (lastScannedValueRef.current === rawValue) {
-                    lastScannedValueRef.current = '';
+        <div className="overflow-hidden border border-white/10 bg-black mb-6 relative min-h-[260px] flex items-center justify-center">
+          {cameraError ? (
+            <div className="text-center px-6 py-10">
+              <p className="font-['Space_Mono'] text-xs text-red-400 uppercase tracking-wider mb-2">Camera unavailable</p>
+              <p className="text-white/50 text-xs mb-4">{cameraError}</p>
+              <p className="text-white/30 text-xs">Use the manual paste fallback below.</p>
+            </div>
+          ) : (
+            <>
+              {!cameraReady && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black z-10">
+                  <p className="font-['Space_Mono'] text-xs text-white/40 uppercase tracking-wider animate-pulse">Starting camera...</p>
+                </div>
+              )}
+              <Scanner
+                constraints={{ facingMode: 'user' }}
+                onScan={(detectedCodes) => {
+                  if (!cameraReady) setCameraReady(true);
+                  const rawValue = detectedCodes?.[0]?.rawValue?.trim();
+                  if (!rawValue || scanBusy || lastScannedValueRef.current === rawValue) return;
+                  lastScannedValueRef.current = rawValue;
+                  onScanTicket(rawValue).finally(() => {
+                    window.setTimeout(() => {
+                      if (lastScannedValueRef.current === rawValue) {
+                        lastScannedValueRef.current = '';
+                      }
+                    }, 3000);
+                  });
+                }}
+                onError={(err: unknown) => {
+                  const msg = err instanceof Error ? err.message : String(err);
+                  if (msg.toLowerCase().includes('permission') || msg.toLowerCase().includes('notallowed')) {
+                    setCameraError('Camera permission denied. Please allow camera access in your browser settings.');
+                  } else if (msg.toLowerCase().includes('notfound') || msg.toLowerCase().includes('devicenotfound')) {
+                    setCameraError('No camera found on this device.');
+                  } else if (msg.toLowerCase().includes('https') || msg.toLowerCase().includes('secure')) {
+                    setCameraError('Camera requires a secure (HTTPS) connection.');
+                  } else {
+                    setCameraError('Camera could not be started. Try the manual input below.');
                   }
-                }, 1500);
-              });
-            }}
-            onError={() => {
-              // Scanner permission/device errors are handled by manual input fallback.
-            }}
-          />
+                }}
+              />
+            </>
+          )}
         </div>
 
         <div className="space-y-4">
@@ -1454,6 +1490,100 @@ function UserCard({ user, onUpdate }: { user: any; onUpdate: (userId: string, st
           </button>
         </div>
       </div>
+    </div>
+  );
+}
+
+// Gallery Tab Component
+function GalleryTab() {
+  const [photos, setPhotos] = useState<{ name: string; url: string }[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const load = async () => {
+    try {
+      const data = await fetchGalleryPhotos();
+      setPhotos(data);
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to load gallery');
+    }
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    setUploading(true);
+    try {
+      await Promise.all(files.map(f => uploadGalleryPhoto(f)));
+      toast.success(`${files.length} photo(s) uploaded`);
+      await load();
+    } catch (err: any) {
+      toast.error(err.message || 'Upload failed');
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleDelete = async (name: string) => {
+    if (!confirm('Delete this photo from the gallery?')) return;
+    try {
+      await deleteGalleryPhoto(name);
+      toast.success('Photo deleted');
+      setPhotos(prev => prev.filter(p => p.name !== name));
+    } catch (err: any) {
+      toast.error(err.message || 'Delete failed');
+    }
+  };
+
+  return (
+    <div className="space-y-8">
+      <div className="flex items-center gap-4">
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          disabled={uploading}
+          className="border border-white px-6 py-4 hover:bg-white hover:text-black transition-all duration-300 flex items-center gap-3 disabled:opacity-50"
+        >
+          <Image size={20} />
+          <span className="font-['Space_Mono'] text-sm uppercase tracking-wider">
+            {uploading ? 'Uploading...' : 'Upload Photos'}
+          </span>
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          multiple
+          className="hidden"
+          onChange={handleUpload}
+        />
+        <span className="font-['Space_Mono'] text-xs text-white/40 uppercase">{photos.length} photo(s)</span>
+      </div>
+
+      {photos.length === 0 ? (
+        <div className="border border-white/10 p-16 text-center">
+          <p className="font-['Space_Mono'] text-xs text-white/40 uppercase tracking-wider">No photos yet. Upload some above.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {photos.map(photo => (
+            <div key={photo.name} className="relative group aspect-square overflow-hidden border border-white/10">
+              <img src={photo.url} alt={photo.name} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <button
+                  onClick={() => handleDelete(photo.name)}
+                  className="p-2 bg-red-600 hover:bg-red-700 rounded transition-colors"
+                  title="Delete photo"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

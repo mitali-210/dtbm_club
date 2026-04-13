@@ -290,3 +290,28 @@ export async function disconnectStrava() {
   const data = await response.json();
   return data;
 }
+
+// ========== GALLERY ==========
+
+export async function fetchGalleryPhotos() {
+  const { data, error } = await supabase.storage.from('gallery').list('', { sortBy: { column: 'created_at', order: 'desc' } });
+  if (error) throw new Error(error.message);
+  return (data || []).filter(f => f.name !== '.emptyFolderPlaceholder').map(file => ({
+    name: file.name,
+    url: supabase.storage.from('gallery').getPublicUrl(file.name).data.publicUrl,
+  }));
+}
+
+export async function uploadGalleryPhoto(file: File) {
+  const ext = file.name.split('.').pop();
+  const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const { data, error } = await supabase.storage.from('gallery').upload(fileName, file, { upsert: false });
+  if (error) throw new Error(`Upload failed: ${error.message}`);
+  console.log('Uploaded:', data);
+  return fileName;
+}
+
+export async function deleteGalleryPhoto(fileName: string) {
+  const { error } = await supabase.storage.from('gallery').remove([fileName]);
+  if (error) throw new Error(error.message);
+}

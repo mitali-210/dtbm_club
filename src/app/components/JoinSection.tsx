@@ -22,13 +22,35 @@ export function JoinSection() {
     e.preventDefault();
     setError('');
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('Please enter a valid email address');
       return;
     }
 
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters');
+    const cleanPhone = formData.phone.replace(/[\s\-+()]/g, '');
+    const normalized = cleanPhone.length === 12 && cleanPhone.startsWith('91')
+      ? cleanPhone.slice(2)
+      : cleanPhone.length === 13 && cleanPhone.startsWith('091')
+      ? cleanPhone.slice(3)
+      : cleanPhone;
+    if (!/^[6-9]\d{9}$/.test(normalized)) {
+      setError('Please enter a valid 10-digit Indian mobile number');
+      return;
+    }
+
+    if (formData.password.length < 8 || formData.password.length > 10) {
+      setError('Password must be between 8 and 10 characters');
+      return;
+    }
+
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(formData.password)) {
+      setError('Password must contain at least one special character');
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
       return;
     }
 
@@ -179,7 +201,7 @@ export function JoinSection() {
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   className="w-full px-6 py-4 bg-black border border-white/10 focus:border-white/30 focus:outline-none transition-all font-['Space_Mono'] text-sm"
-                  placeholder="At least 6 characters"
+                  placeholder="8-10 chars, include special character"
                   required
                 />
               </div>
