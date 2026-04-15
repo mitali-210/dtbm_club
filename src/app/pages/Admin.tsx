@@ -9,7 +9,7 @@ import { Scanner } from '@yudiel/react-qr-scanner';
 import { exportAdminEventCsv, fetchAdminEventCheckins, fetchReminderPreview, sendEventReminders, fetchGalleryPhotos, uploadGalleryPhoto, deleteGalleryPhoto } from '../lib/api';
 import { ADMIN_EMAILS } from '../lib/config';
 
-type TabType = 'events' | 'users' | 'activities' | 'scanner' | 'gallery';
+type TabType = 'events' | 'users' | 'activities' | 'scanner' | 'gallery' | 'settings';
 
 function parseFlexibleDateTime(value: unknown): number {
   if (typeof value === 'number') {
@@ -570,6 +570,9 @@ export function Admin() {
           <TabButton active={activeTab === 'gallery'} onClick={() => setActiveTab('gallery')}>
             Gallery
           </TabButton>
+          <TabButton active={activeTab === 'settings'} onClick={() => setActiveTab('settings')}>
+            Settings
+          </TabButton>
         </div>
 
         {/* Tab Content */}
@@ -633,6 +636,8 @@ export function Admin() {
         )}
 
         {activeTab === 'gallery' && <GalleryTab />}
+
+        {activeTab === 'settings' && <SettingsTab />}
       </div>
     </div>
   );
@@ -1584,6 +1589,57 @@ function GalleryTab() {
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+function SettingsTab() {
+  const [formUrl, setFormUrl] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    supabase.from('settings').select('value').eq('key', 'activity_form_url').single().then(({ data }) => {
+      if (data?.value) setFormUrl(data.value);
+    });
+  }, []);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const { error } = await supabase.from('settings').upsert({ key: 'activity_form_url', value: formUrl }, { onConflict: 'key' });
+      if (error) throw error;
+      toast.success('Form URL saved!');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to save');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="space-y-8">
+      <div className="border border-white/10 p-8 md:p-12">
+        <h3 className="font-['Bebas_Neue'] text-4xl mb-8">Submit Activity Form URL</h3>
+        <p className="font-['Space_Mono'] text-xs text-white/40 uppercase tracking-wider mb-4">
+          This URL will be used for the "Submit Activity" button on the user dashboard.
+        </p>
+        <div className="flex gap-4">
+          <input
+            type="url"
+            value={formUrl}
+            onChange={(e) => setFormUrl(e.target.value)}
+            className="flex-1 px-6 py-4 bg-black border border-white/10 focus:border-white/30 focus:outline-none transition-all font-['Space_Mono'] text-sm"
+            placeholder="https://forms.gle/..."
+          />
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="border border-white px-8 py-4 hover:bg-white hover:text-black transition-all duration-300 font-['Space_Mono'] text-xs uppercase tracking-wider disabled:opacity-50"
+          >
+            {saving ? 'Saving...' : 'Save'}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

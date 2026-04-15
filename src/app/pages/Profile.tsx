@@ -4,12 +4,12 @@ import { useAuth } from '../context/AuthContext';
 import { User, TrendingUp, Trophy, Award, MapPin, Zap, Target, Flag, ExternalLink, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { fetchEventCertificate, fetchEventTicket, fetchEvents } from '../lib/api';
+import { supabase } from '../lib/supabase';
 import { QRTicket } from '../components/QRTicket';
 import { toast } from 'sonner';
 import { toPng } from 'html-to-image';
 
-const GOOGLE_FORM_URL = 'https://forms.gle/irdm9MH6L6Hy2Fpy5';
-const MILES_PER_KILOMETER = 0.621371;
+const GOOGLE_FORM_URL = 'https://forms.gle/irdm9MH6L6Hy2Fpy5';const MILES_PER_KILOMETER = 0.621371;
 const FIVE_K_MILES = 5 * MILES_PER_KILOMETER;
 const TEN_K_MILES = 10 * MILES_PER_KILOMETER;
 const HALF_MARATHON_MILES = 13.1094;
@@ -45,10 +45,17 @@ export function Profile() {
   const navigate = useNavigate();
   const [ticketsLoading, setTicketsLoading] = useState(false);
   const [tickets, setTickets] = useState<any[]>([]);
+  const [googleFormUrl, setGoogleFormUrl] = useState(GOOGLE_FORM_URL);
   const [selectedTicket, setSelectedTicket] = useState<any | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
   const [certificateData, setCertificateData] = useState<any | null>(null);
   const certificateRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    supabase.from('settings').select('value').eq('key', 'activity_form_url').single().then(({ data }) => {
+      if (data?.value) setGoogleFormUrl(data.value);
+    });
+  }, []);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -248,7 +255,7 @@ export function Profile() {
             {/* Submit Activity Button */}
             <div className="w-full md:w-auto">
               <a
-                href={GOOGLE_FORM_URL}
+                href={googleFormUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-6 py-3 bg-white text-black rounded-lg font-medium transition-all hover:bg-[#B3B3B3] flex items-center justify-center gap-2 w-full md:w-auto"

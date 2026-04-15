@@ -383,7 +383,7 @@ Deno.serve(async (req) => {
           count: registrations?.length || 0,
           reminderType: "pre-event",
           eventName: event?.name,
-          channels: { resendConfigured: false, whatsappWebhookConfigured: false }
+          channels: { resendConfigured: true, whatsappWebhookConfigured: false }
         }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
@@ -392,7 +392,7 @@ Deno.serve(async (req) => {
         const parts = path.split("/");
         const eventId = parts[parts.length - 3];
         const { data: event } = await supabase.from("events").select("*").eq("id", eventId).single();
-        const { data: registrations } = await supabase.from("event_registrations").select("*, profiles(name, email)").eq("event_id", eventId).eq("checked_in", false);
+        const { data: registrations } = await supabase.from("event_registrations").select("*, profiles(name, email)").eq("event_id", eventId);
 
         const resendApiKey = Deno.env.get("RESEND_API_KEY");
         if (!resendApiKey) {
@@ -407,7 +407,7 @@ Deno.serve(async (req) => {
             method: "POST",
             headers: { "Authorization": `Bearer ${resendApiKey}`, "Content-Type": "application/json" },
             body: JSON.stringify({
-              from: "DTBM Run Club <onboarding@resend.dev>",
+              from: "DTBM Run Club <noreply@dtbmclub.in>",
               to: [email],
               subject: `Reminder: ${event?.name} is coming up!`,
               html: `<div style="font-family:sans-serif;background:#000;color:#fff;padding:32px;border-radius:12px;">

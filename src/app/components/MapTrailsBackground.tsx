@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import heroVideo from "../../upscaled-video.mp4";
+import heroVideo from "../../BTBM OML 3.mp4";
 
 const HERO_FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1558980664-10ea292cc10d?auto=format&fit=crop&w=1800&q=80&sat=-100";

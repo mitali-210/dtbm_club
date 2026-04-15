@@ -4,7 +4,7 @@ import { Menu, X, User, LogOut, Shield } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { ADMIN_EMAILS } from "../lib/config";
-import dtbmLogo from "./dtbm-logo.png";
+import dtbmLogo from "/DTBM White.png";
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,9 +20,8 @@ export function Navigation() {
       <div className="max-w-[1440px] mx-auto px-[var(--site-margin)]">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <img src={dtbmLogo} alt="DTBM Logo" className="h-12 w-auto" />
-            <span className="font-['Bebas_Neue'] text-2xl tracking-wider font-[Belgrano]">DTBM{">"}</span>
+          <Link to="/" className="flex items-center group">
+            <img src={dtbmLogo} alt="DTBM Logo" className="h-24 w-auto" />
           </Link>
 
           {/* Desktop Nav */}
