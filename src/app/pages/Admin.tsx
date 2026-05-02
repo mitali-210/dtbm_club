@@ -368,11 +368,15 @@ export function Admin() {
     if (!qrData || scanBusy) return;
 
     // Handle JSON QR data from QRTicket component
+    let parsedUserId = null;
+    let parsedEventId = null;
     try {
       const parsed = JSON.parse(qrData);
       if (parsed.qrSignature) {
         qrData = parsed.qrSignature;
       }
+      if (parsed.userId) parsedUserId = parsed.userId;
+      if (parsed.eventId) parsedEventId = parsed.eventId;
     } catch (e) {
       // Not JSON, use as is (normal string scanner or manual input)
     }
@@ -388,7 +392,7 @@ export function Admin() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ qrData }),
+        body: JSON.stringify({ qrData, userId: parsedUserId, eventId: parsedEventId }),
       });
 
       const data = await response.json();
