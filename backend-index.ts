@@ -126,7 +126,14 @@ Deno.serve(async (req) => {
     if (req.method === "GET" && path.endsWith("/events")) {
       const { data, error } = await supabase.from("events").select("*").order("date", { ascending: true });
       if (error) throw error;
-      return new Response(JSON.stringify({ events: data }), {
+      
+      // Add participant count for each event
+      const eventsWithCount = await Promise.all((data || []).map(async (event: any) => {
+        const { count } = await supabase.from("event_registrations").select("*", { count: "exact", head: true }).eq("event_id", event.id);
+        return { ...event, participants: count || 0 };
+      }));
+      
+      return new Response(JSON.stringify({ events: eventsWithCount }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
     }
@@ -184,8 +191,13 @@ Deno.serve(async (req) => {
       const eventId = parts[parts.length - 2];
       const { selectedDistance, consentAccepted } = await req.json();
       const qrData = `${user.id}-${eventId}-${Date.now()}`;
+
+      // Auto-assign bib number based on registration count for this event
+      const { count: regCount } = await supabase.from("event_registrations").select("*", { count: "exact", head: true }).eq("event_id", eventId);
+      const bibNumber = (regCount || 0) + 1;
+
       const { data, error } = await supabase.from("event_registrations").insert({
-        event_id: eventId, user_id: user.id, selected_distance: selectedDistance, consent_accepted: consentAccepted, qr_data: qrData
+        event_id: eventId, user_id: user.id, selected_distance: selectedDistance, consent_accepted: consentAccepted, qr_data: qrData, bib_number: bibNumber
       }).select().single();
       if (error) throw error;
       return new Response(JSON.stringify({ ticket: data, message: "Registered successfully" }), {
@@ -270,9 +282,20 @@ Deno.serve(async (req) => {
       
       // Admin Scan Ticket
       if (req.method === "POST" && path.endsWith("/admin/tickets/scan")) {
-        const { qrData } = await req.json();
-        const { data: ticket, error: tErr } = await supabase.from("event_registrations").select("*, profiles(name)").eq("qr_data", qrData).single();
-        if (tErr || !ticket) throw new Error("Ticket not found");
+        const { qrData, userId: qrUserId, eventId: qrEventId } = await req.json();
+        
+        // Try exact match first
+        let ticket = null;
+        const { data: exactMatch } = await supabase.from("event_registrations").select("*, profiles(name)").eq("qr_data", qrData).single();
+        ticket = exactMatch;
+        
+        // If not found, try by userId + eventId directly from QR JSON
+        if (!ticket && qrUserId && qrEventId) {
+          const { data: byIds } = await supabase.from("event_registrations").select("*, profiles(name)").eq("user_id", qrUserId).eq("event_id", qrEventId).single();
+          ticket = byIds;
+        }
+
+        if (!ticket) throw new Error("Ticket not found");
 
         if (ticket.checked_in) {
           return new Response(JSON.stringify({ alreadyCheckedIn: true, userName: ticket.profiles?.name }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
